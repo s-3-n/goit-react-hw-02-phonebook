@@ -1,12 +1,21 @@
-import { FilterFeald } from './Filter.stayled';
+import PropTypes from 'prop-types';
+import {
+  InputStyled,
+  CaptionFStyled,
+} from 'components/ContactForm/ContactForm.styled';
 
-export default function Filter({ onChange, value }) {
+const Filter = ({ filterContacts, filter }) => {
   return (
     <>
-      <FilterFeald>
-        Find contact by name
-        <input type="text" onChange={onChange} value={value} />
-      </FilterFeald>
+      <CaptionFStyled>Find contacts by name</CaptionFStyled>
+      <InputStyled onChange={filterContacts} value={filter} type="text" />
     </>
   );
-}
+};
+
+Filter.propTypes = {
+  filter: PropTypes.string,
+  filterContacts: PropTypes.func,
+};
+
+export default Filter;

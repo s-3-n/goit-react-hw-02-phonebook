@@ -1,8 +1,11 @@
 import { Component } from 'react';
-import ContactForm from './ContactForm';
-import Filter from './Filter';
-import ContactList from './ContactList';
 import { nanoid } from 'nanoid';
+
+import { ContactForm, ContactList, Filter } from 'components';
+import {
+  TitleStyled,
+  SubtitleStyled,
+} from '../components/ContactForm/ContactForm.styled';
 
 export class App extends Component {
   state = {
@@ -15,54 +18,67 @@ export class App extends Component {
     filter: '',
   };
 
-  formSubmitData = ({ name, number }) => {
-    let contact = {
-      name,
-      number,
-      id: nanoid(),
-    };
-
-    let names = this.state.contacts.map(cont => cont.name.toLocaleLowerCase());
-    if (names.includes(name.toLocaleLowerCase())) {
-      alert(`${name} is already in contacts.`);
-      return;
+  addContacts = contacts => {
+    if (
+      this.state.contacts.some(
+        el => el.name.toLowerCase() === contacts.name.toLowerCase()
+      )
+    ) {
+      return alert(`${contacts.name} is already in contacts.`);
     }
-
-    this.setState(PrevState => ({
-      contacts: [contact, ...PrevState.contacts],
+    this.setState(prevState => ({
+      contacts: [...prevState.contacts, { ...contacts, id: nanoid() }],
     }));
   };
 
-  filterContacts = event => {
-    const { value } = event.currentTarget;
-    this.setState({
-      filter: value.toLowerCase(),
-    });
+  removeContacts = id => {
+    this.setState(prev => ({
+      contacts: prev.contacts.filter(el => el.id !== id),
+    }));
   };
 
-  removeContact = id => {
-    this.setState(PrevState => ({
-      contacts: PrevState.contacts.filter(contact => contact.id !== id),
-    }));
+  filterContacts = e => {
+    const { value } = e.target;
+    this.setState({ filter: value });
+  };
+
+  showContacts = () => {
+    const { contacts, filter: condition } = this.state;
+    if (condition === '') return contacts;
+    return contacts.filter(el =>
+      el.name.toLowerCase().includes(condition.toLowerCase())
+    );
   };
 
   render() {
-    const { contacts, filter } = this.state;
-
-    let visibleContacts = contacts.filter(({ name }) =>
-      name.toLowerCase().includes(filter)
-    );
-
+    const renderContacts = this.showContacts();
     return (
-      <div>
-        <h1>Phonebook</h1>
-        <ContactForm onSubmit={this.formSubmitData}></ContactForm>
-        <Filter onChange={this.filterContacts} value={filter}></Filter>
-        <h2>Contacts</h2>
+      <div
+        style={{
+          height: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          flexWrap: 'nowrap',
+          justifyContent: 'center',
+          alignItems: 'center',
+          fontSize: 40,
+          color: '#010101',
+        }}
+      >
+        <TitleStyled>Phonebook</TitleStyled>
+        <ContactForm
+          addContacts={this.addContacts}
+          contacts={this.state.contacts}
+        />
+        <SubtitleStyled>Contacts</SubtitleStyled>
+        <Filter
+          filter={this.state.filter}
+          filterContacts={this.filterContacts}
+        />
         <ContactList
-          contacts={visibleContacts}
-          removeContact={this.removeContact}
-        ></ContactList>
+          contacts={renderContacts}
+          removeContacts={this.removeContacts}
+        />
       </div>
     );
   }

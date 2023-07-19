@@ -1,18 +1,23 @@
-export default function ContactList({ contacts, removeContact }) {
+import PropTypes from 'prop-types';
+import { BtnStyled } from 'components/ContactForm/ContactForm.styled';
+import { ItemStyled, ListStyled } from './ContactList.styled';
+
+const ContactList = ({ contacts, removeContacts }) => {
   return (
-    <>
-      <ul>
-        {contacts.map(({ name, number, id }) => {
-          return (
-            <li key={id} number={number} name={name}>
-              {name}: {number}
-              <button type="button" onClick={() => removeContact(id)}>
-                Delete
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </>
+    <ListStyled>
+      {contacts.map(el => (
+        <ItemStyled key={el.id}>
+          {el.name}: {el.number}
+          <BtnStyled onClick={() => removeContacts(el.id)}>Delete</BtnStyled>
+        </ItemStyled>
+      ))}
+    </ListStyled>
   );
-}
+};
+
+ContactList.propTypes = {
+  contacts: PropTypes.arrayOf(PropTypes.objectOf(PropTypes.string)),
+  removeContacts: PropTypes.func,
+};
+
+export default ContactList;
